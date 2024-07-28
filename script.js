@@ -14,24 +14,12 @@ setInterval(function() {
   document.getElementById("timestamp").textContent = "Current Unix Timestamp: " + timestamp;
 }, 1000);
 
-function decimalToBase14(decimalNum) {
-  if (decimalNum === 0) {
-    return "0";
-  }
+const button = document.querySelector('button');
+const input = document.getElementById('b14');
+const resultParagraph = document.querySelector('p');
 
-  const base14Digits = "0123456789ABCDEF";
-  let result = "";
-
-  while (decimalNum > 0) {
-    let remainder = decimalNum % 14;
-    result = base14Digits[remainder] + result;
-    decimalNum = Math.floor(decimalNum / 14);
-  }
-
-  return result;
-}
-
-// Example usage:
-const decimalNumber = 2048;
-const base14Number = decimalToBase14(decimalNumber);
-console.log(`Decimal ${decimalNumber} in base 14 is: ${base14Number}`);
+button.addEventListener('click', () => {
+  const base10 = parseInt(input.value, 10);
+  const base14 = base10.toString(14);
+  resultParagraph.textContent = `base 14 number: ${base14}`;
+});
