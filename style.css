@@ -1,0 +1,23 @@
+html {
+  height: 100%;
+  width: 100%;
+}
+
+h1 {
+    text-align: normal;
+    font-family: "verdana", sans-serif;
+    font-weight: normal;
+}
+p {
+    font-family: "verdana", sans-serif;
+    font-weight: normal;
+}
+
+body {
+  background-image: url("https://lh3.googleusercontent.com/pw/AP1GczP--0JkX3nSJuxgK07YInQtlso-spJ1bWWiaIKQswVMyJmKKigwtoBn4gtEv-q9Bzyk3uvlqI9EFc4tz71ZJiiaGsYrJamopIvQ7wZag4DILkdatQ=w2400");
+  background-blend-mode: ;
+}
+
+.button {
+  background-color: #00ffff;
+}
