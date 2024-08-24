@@ -20,6 +20,6 @@ button.addEventListener('click', () => {
 });
 
 setInterval(function() {
-  const hv = document.scrollingElement('myRange');
+  const hv = document.getElementById('myRange').value; // Get the value of the range input
   document.getElementById("myRange").textContent = `value: ${hv}`;
 }, 1000);
