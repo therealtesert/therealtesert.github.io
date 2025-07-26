@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>bytebeat player</title>
+  <style>
+
+    body {
+      background-color: #000;
+      background-image: url("https://lh3.googleusercontent.com/pw/AP1GczP--0JkX3nSJuxgK07YInQtlso-spJ1bWWiaIKQswVMyJmKKigwtoBn4gtEv-q9Bzyk3uvlqI9EFc4tz71ZJiiaGsYrJamopIvQ7wZag4DILkdatQ=w2400");
+      font-family: Verdana; /* color: #eee; */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0em;
+    }
+    input, button, textarea {
+      font-family: monospace;
+      margin: 1em;
+      padding: 0em;
+      font-size: 1em;
+    }
+    label {
+      margin-top: 0m;
+    }
+  </style>
+</head>
+<body>
+go back
+  <h1>Bytebeat Player</h1>
+  
+  <label for="expr">Bytebeat Expression (use "t")</label>
+  <textarea id="expr" rows="2" cols="40">t>>4|t>>5</textarea>
+  <label for="rate">Sample Rate (kHz): <span id="rateLabel">8</span>kHz</label>
+  <input type="range" id="rate" min="1" max="48" value="8">
+  <button id="toggle">Play</button>
+  <p>Updates: \n w</p>
+  <script>
+    let audioCtx, scriptNode;
+    let playing = false;
+    let t = 0;
+    let virtualRate = 8000; // default simulated sample rate
+    let exprFunc = (t) => t>>4|t>>5;
+
+    const exprInput = document.getElementById("expr");
+    const rateSlider = document.getElementById("rate");
+    const rateLabel = document.getElementById("rateLabel");
+    const toggleBtn = document.getElementById("toggle");
+
+    rateSlider.addEventListener("input", () => {
+      virtualRate = parseInt(rateSlider.value) * 1000;
+      rateLabel.textContent = rateSlider.value;
+    });
+
+    toggleBtn.addEventListener("click", () => {
+      if (playing) {
+        stopAudio();
+        toggleBtn.textContent = "Play";
+      } else {
+        startAudio();
+        toggleBtn.textContent = "Pause";
+      }
+      playing = !playing;
+    });
+
+    function startAudio() {
+      t = 0;
+      const exprText = exprInput.value;
+      try {
+        exprFunc = new Function("t", "return " + exprText);
+      } catch (e) {
+        alert("Invalid expression!");
+        return;
+      }
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const actualSampleRate = audioCtx.sampleRate;
+      const ratio = actualSampleRate / virtualRate;
+
+      scriptNode = audioCtx.createScriptProcessor(1024, 0, 1);
+      scriptNode.onaudioprocess = function(e) {
+        const output = e.outputBuffer.getChannelData(0);
+        for (let i = 0; i < output.length; i++) {
+          // Only compute new sample every "ratio" frames
+          if (i % ratio < 1) {
+            try {
+              const val = exprFunc(t++);
+              var sample = ((val & 255) - 128) / 128; // Normalize
+            } catch {
+              sample = 0;
+            }
+          }
+          output[i] = sample;
+        }
+      };
+
+      scriptNode.connect(audioCtx.destination);
+    }
+
+    function stopAudio() {
+      if (scriptNode) scriptNode.disconnect();
+      if (audioCtx) audioCtx.close();
+    }
+  </script>
+</body>
+</html>
